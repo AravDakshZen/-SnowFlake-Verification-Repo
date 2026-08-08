@@ -70,3 +70,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
 
 
 Add a guard clause to check if `user` is null or undefined. If so, return a placeholder string (e.g., "Unknown User") or throw a more descriptive error. Here we return a placeholder to keep the function safe.
+
+Fix all four bugs: add null check in getDisplayName, fix variable reference in checkoutTotal, correct taxRate to tax and parse amount in applyDiscount, fix comparison operator in isEligible.
