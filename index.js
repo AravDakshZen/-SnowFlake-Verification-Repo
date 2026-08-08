@@ -67,3 +67,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log('Bug C output:', applyDiscount('100', 10)) // NaN
   console.log('Bug D output:', isEligible(16)) // 'eligible' (wrong!)
 }
+
+
+Add a guard clause to check if `user` is null or undefined. If so, return a placeholder string (e.g., "Unknown User") or throw a more descriptive error. Here we return a placeholder to keep the function safe.
