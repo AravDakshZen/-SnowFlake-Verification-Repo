@@ -19,34 +19,32 @@
 
 // ── Bug A: calling .name on a null user ────────────────────────────────────
 export function getDisplayName(user) {
-  // Intentional bug: if `user` is null this throws "Cannot read properties
-  // of null (reading 'name')".
-  return `${user.name} (${user.email})`
+  if (!user) {
+    return 'Unknown User';
+  }
+  return `${user.name || 'Unknown'} (${user.email || 'No Email'})`;
 }
 
 // ── Bug B: using an undefined variable ────────────────────────────────────
 export function checkoutTotal(cart) {
-  // Intentional bug: `price` is never declared → ReferenceError.
   let total = 0
   for (const item of cart) {
-    total += item.quantity * price // <-- ReferenceError: price is not defined
+    total += item.quantity * (item.price || 0)
   }
   return total
 }
 
 // ── Bug C: silent NaN from an undefined config field ──────────────────────
 export function applyDiscount(amount, discountPercent) {
-  // Intentional bug: `settings.taxRate` does not exist → undefined → the
-  // discount math silently produces NaN instead of throwing.
   const settings = { tax: 0.05 }
-  const discount = amount * (discountPercent / 100) * settings.taxRate
-  return amount - discount // NaN when taxRate is undefined
+  const numericAmount = Number(amount) || 0;
+  const discount = numericAmount * (discountPercent / 100) * (settings.tax || 0);
+  return numericAmount - discount;
 }
 
 // ── Bug D: wrong comparison operator ──────────────────────────────────────
 export function isEligible(age) {
-  // Intentional bug: `=` instead of `===` — assignment always truthy.
-  if (age = 18) return 'eligible'
+  if (age >= 18) return 'eligible'
   return 'not eligible'
 }
 
@@ -67,6 +65,3 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log('Bug C output:', applyDiscount('100', 10)) // NaN
   console.log('Bug D output:', isEligible(16)) // 'eligible' (wrong!)
 }
-
-
-Add a guard clause to check if `user` is null or undefined. If so, return a placeholder string (e.g., "Unknown User") or throw a more descriptive error. Here we return a placeholder to keep the function safe.
