@@ -27,41 +27,51 @@ export function getDisplayName(user) {
 
 // ── Bug B: using an undefined variable ────────────────────────────────────
 export function checkoutTotal(cart) {
-  let total = 0
-  for (const item of cart) {
-    total += item.quantity * (item.price || 0)
+  if (!cart || !Array.isArray(cart)) {
+    return 0;
   }
-  return total
+  let total = 0;
+  for (const item of cart) {
+    if (!item) continue;
+    const quantity = Number(item.quantity) || 0;
+    const price = Number(item.price) || 0;
+    total += quantity * price;
+  }
+  return total;
 }
 
 // ── Bug C: silent NaN from an undefined config field ──────────────────────
 export function applyDiscount(amount, discountPercent) {
-  const settings = { tax: 0.05 }
+  const settings = { tax: 0.05 };
   const numericAmount = Number(amount) || 0;
-  const discount = numericAmount * (discountPercent / 100) * (settings.tax || 0);
+  const numericDiscountPercent = Number(discountPercent) || 0;
+  const discount = numericAmount * (numericDiscountPercent / 100) * (settings.tax || 0);
   return numericAmount - discount;
 }
 
 // ── Bug D: wrong comparison operator ──────────────────────────────────────
 export function isEligible(age) {
-  if (age >= 18) return 'eligible'
-  return 'not eligible'
+  const numericAge = Number(age) || 0;
+  if (numericAge >= 18) {
+    return 'eligible';
+  }
+  return 'not eligible';
 }
 
 // Self-check — run `node index.js` to see every bug fire.
-import { pathToFileURL } from 'node:url'
+import { pathToFileURL } from 'node:url';
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    getDisplayName(null) // throws → "uncaught"
+    getDisplayName(null); // throws → "uncaught"
   } catch (e) {
-    console.error('Bug A confirmed:', e.message)
+    console.error('Bug A confirmed:', e.message);
   }
   try {
-    checkoutTotal([{ quantity: 2 }]) // throws → ReferenceError
-  } catch (e) {
-    console.error('Bug B confirmed:', e.message)
+    checkoutTotal([{ quantity: 2 }]); // throws → ReferenceError
+  } catch (e) { 
+    console.error('Bug B confirmed:', e.message);
   }
-  console.log('Bug C output:', applyDiscount('100', 10)) // NaN
-  console.log('Bug D output:', isEligible(16)) // 'eligible' (wrong!)
+  console.log('Bug C output:', applyDiscount('100', 10)); // NaN
+  console.log('Bug D output:', isEligible(16)); // 'eligible' (wrong!)
 }
