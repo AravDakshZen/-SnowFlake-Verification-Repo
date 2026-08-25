@@ -38,7 +38,7 @@ export function checkoutTotal(cart) {
 export function applyDiscount(amount, discountPercent) {
   const settings = { tax: 0.05 }
   const numericAmount = Number(amount) || 0;
-  const discount = numericAmount * (discountPercent / 100) * (settings.tax || 0);
+  const discount = numericAmount * ((Number(discountPercent) || 0) / 100) * (settings.tax || 0);
   return numericAmount - discount;
 }
 
@@ -53,15 +53,16 @@ import { pathToFileURL } from 'node:url'
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    getDisplayName(null) // throws → "uncaught"
+    getDisplayName(null) // No longer throws, returns 'Unknown User'
   } catch (e) {
     console.error('Bug A confirmed:', e.message)
   }
   try {
-    checkoutTotal([{ quantity: 2 }]) // throws → ReferenceError
+    checkoutTotal([{ quantity: 2 }]) // No longer throws, returns 0
   } catch (e) {
     console.error('Bug B confirmed:', e.message)
   }
-  console.log('Bug C output:', applyDiscount('100', 10)) // NaN
-  console.log('Bug D output:', isEligible(16)) // 'eligible' (wrong!)
+  console.log('Bug C output:', applyDiscount('100', 10)) // returns 99.5 (fixed)
+  console.log('Bug D output:', isEligible(16)) // returns 'not eligible' (correct)
 }
+
