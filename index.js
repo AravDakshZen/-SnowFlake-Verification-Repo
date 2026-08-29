@@ -36,9 +36,9 @@ export function checkoutTotal(cart) {
 
 // ── Bug C: silent NaN from an undefined config field ──────────────────────
 export function applyDiscount(amount, discountPercent) {
-  const settings = { tax: 0.05 }
   const numericAmount = Number(amount) || 0;
-  const discount = numericAmount * (discountPercent / 100) * (settings.tax || 0);
+  const percent = Number(discountPercent) || 0;
+  const discount = numericAmount * (percent / 100);
   return numericAmount - discount;
 }
 
@@ -52,16 +52,8 @@ export function isEligible(age) {
 import { pathToFileURL } from 'node:url'
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  try {
-    getDisplayName(null) // throws → "uncaught"
-  } catch (e) {
-    console.error('Bug A confirmed:', e.message)
-  }
-  try {
-    checkoutTotal([{ quantity: 2 }]) // throws → ReferenceError
-  } catch (e) {
-    console.error('Bug B confirmed:', e.message)
-  }
-  console.log('Bug C output:', applyDiscount('100', 10)) // NaN
-  console.log('Bug D output:', isEligible(16)) // 'eligible' (wrong!)
+  console.log('Bug A output:', getDisplayName(null))
+  console.log('Bug B output:', checkoutTotal([{ quantity: 2, price: 10 }]))
+  console.log('Bug C output:', applyDiscount('100', 10))
+  console.log('Bug D output:', isEligible(16))
 }
